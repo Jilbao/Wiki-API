@@ -50,6 +50,17 @@ app.post("/articles", (req, res)=>{
         };
     });
 });
+//delete /articles
+app.delete("/articles", (req, res)=>{
+    ArticleModel.deleteMany((err)=>{
+        if (!err) {
+            res.send(err);
+        } else {
+            res.send("Succesfully deleted articles");
+        }
+    });
+});
+
 
 
 
