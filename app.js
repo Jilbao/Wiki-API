@@ -107,6 +107,7 @@ app.route("/articles/:articleTitle")
                 }
              });
     })
+    // Delete
     .delete((req, res) => {
         ArticleModel.deleteOne({title: req.params.articleTitle},(err)=>{
             if (!err) {
