@@ -2,6 +2,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const ejs = require("ejs");
+const _ = require("lodash");
 
 //app setups
 const port = 3000;
@@ -23,9 +24,9 @@ const articleSchema = {
 
 const ArticleModel = mongoose.model("article", articleSchema);
 
-// Main route
+/////////////////////////////////////////Main Route///////////////////////////////////////
 app.route("/articles")
-// Get
+    // Get
 .get((req, res) => {
     ArticleModel.find((err, articles)=>{
         if (!err) {
@@ -36,7 +37,7 @@ app.route("/articles")
     });
    
 })
-// Post
+    // Post
 .post((req, res)=>{
 
     const newArticle = new ArticleModel({
@@ -52,18 +53,69 @@ app.route("/articles")
         };
     });
 })
-// Delete
+    // Delete
 .delete((req, res)=>{
     ArticleModel.deleteMany((err)=>{
-        if (err) {
-            res.send(err);
-        } else {
+        if (!err) {
             res.send("Succesfully deleted all articles");
+        } else {
+            res.send(err);
         }
     });
 });
 
-
+/////////////////////////////////////////Specific Route///////////////////////////////////////
+app.route("/articles/:articleTitle")
+    // Get
+    .get((req, res) => {
+        ArticleModel.findOne({title: req.params.articleTitle}, (err, article)=>{
+            if (!err) {
+                if (article) {
+                    res.send(article);
+                } else {
+                    res.send("Article can not be found!")
+                }
+                
+            } else {
+                res.send(err);
+            }
+        })
+    })
+    // Put
+    .put((req, res) => {
+       
+        ArticleModel.replaceOne({title: req.params.articleTitle}, 
+            {
+                title: req.body.title,
+                content: req.body.content
+            },
+             (err)=>{
+                if (!err) {
+                    res.send("Succesfully updated the article.");  
+                }else{
+                    res.send(err);
+                }
+        });
+    })
+    // Patch
+    .patch((req, res) => {
+        ArticleModel.updateOne({title: req.params.articleTitle}, req.body, (err)=>{
+                if (!err) {
+                    res.send("Succesfully patched the article.")
+                } else {
+                    res.send(err);
+                }
+             });
+    })
+    .delete((req, res) => {
+        ArticleModel.deleteOne({title: req.params.articleTitle},(err)=>{
+            if (!err) {
+                res.send("Succesfully deleted the article.")
+            } else {
+                res.send(err);
+            }
+        });
+    });
 
 
 
